@@ -1,0 +1,2029 @@
+<!-- ================================================================== -->
+<!-- WONDERCUB LABS :: MISSION CONTROL DASHBOARD v2                     -->
+<!-- Paste this block into a Shopify "custom-liquid" section,           -->
+<!-- or a custom HTML block on a page.details template.                 -->
+<!-- Replace PRODUCT_HANDLE strings with your Shopify product handles.  -->
+<!-- ================================================================== -->
+
+<div id="wc-mission-control">
+
+<!-- ============ STYLES ============ -->
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
+
+  #wc-mission-control *,
+  #wc-mission-control *::before,
+  #wc-mission-control *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  #wc-mission-control {
+    --wc-bg-0: #05070d;
+    --wc-bg-1: #0a0d17;
+    --wc-bg-2: #0e1220;
+    --wc-cyan: #00eaff;
+    --wc-cyan-soft: #7ff4ff;
+    --wc-amber: #ffaa00;
+    --wc-green: #00ffa3;
+    --wc-red: #ff2d5f;
+    --wc-purple: #b967ff;
+    --wc-text: #e4efff;
+    --wc-text-dim: #7a8aa8;
+    --wc-text-muted: #50607c;
+    --wc-border: rgba(100, 130, 180, 0.15);
+    --wc-border-bright: rgba(0, 234, 255, 0.25);
+    --wc-grid: rgba(100, 140, 200, 0.06);
+
+    font-family: 'Rajdhani', system-ui, sans-serif;
+    color: var(--wc-text);
+    background: var(--wc-bg-0);
+    padding: 28px 32px 80px;
+    min-height: 100vh;
+    position: relative;
+    overflow: hidden;
+    line-height: 1.4;
+  }
+
+  /* Grid background overlay */
+  #wc-mission-control::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--wc-grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--wc-grid) 1px, transparent 1px);
+    background-size: 56px 56px;
+    pointer-events: none;
+    mask-image: linear-gradient(180deg, #000 0%, #000 70%, transparent 100%);
+    -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 70%, transparent 100%);
+  }
+
+  /* Subtle radial ambient */
+  #wc-mission-control::after {
+    content: "";
+    position: absolute;
+    top: -200px;
+    right: -200px;
+    width: 800px;
+    height: 800px;
+    background: radial-gradient(circle, rgba(0, 234, 255, 0.04), transparent 60%);
+    pointer-events: none;
+  }
+
+  .wc-shell {
+    position: relative;
+    z-index: 2;
+    max-width: 1480px;
+    margin: 0 auto;
+  }
+
+  /* ========================= HEADER ========================= */
+  .wc-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 28px;
+    margin-bottom: 20px;
+  }
+
+  .wc-logo {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .wc-logo-mark {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .wc-logo-mark svg {
+    width: 100%; height: 100%;
+    filter: drop-shadow(0 0 8px rgba(0, 234, 255, 0.4));
+  }
+
+  .wc-logo-text {
+    line-height: 1.05;
+  }
+
+  .wc-logo-text .brand {
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700;
+    font-size: 22px;
+    letter-spacing: 0.01em;
+  }
+
+  .wc-logo-text .brand .accent { color: var(--wc-cyan); }
+
+  .wc-logo-text .sub {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.35em;
+    color: var(--wc-amber);
+    margin-top: 6px;
+    text-transform: uppercase;
+  }
+
+  .wc-header-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .wc-user-pill {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 18px 10px 14px;
+    background: rgba(15, 22, 40, 0.6);
+    border: 1px solid var(--wc-border-bright);
+    border-radius: 999px;
+    transition: all 0.25s ease;
+  }
+
+  .wc-user-pill:focus-within {
+    border-color: var(--wc-cyan);
+    box-shadow: 0 0 0 3px rgba(0, 234, 255, 0.1);
+  }
+
+  .wc-user-pill svg {
+    width: 16px; height: 16px;
+    color: var(--wc-amber);
+    flex-shrink: 0;
+  }
+
+  .wc-user-pill input {
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--wc-cyan);
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    width: 120px;
+    letter-spacing: 0.02em;
+  }
+
+  .wc-user-pill input::placeholder {
+    color: var(--wc-text-muted);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+
+  .wc-logout-btn {
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(15, 22, 40, 0.6);
+    border: 1px solid var(--wc-border-bright);
+    border-radius: 10px;
+    color: var(--wc-cyan);
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .wc-logout-btn:hover {
+    background: rgba(255, 45, 95, 0.1);
+    border-color: var(--wc-red);
+    color: var(--wc-red);
+  }
+
+  .wc-logout-btn svg { width: 18px; height: 18px; }
+
+  /* ========================= HERO ========================= */
+  .wc-hero {
+    margin: 40px 0 36px;
+    max-width: 720px;
+  }
+
+  .wc-hero h1 {
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 800;
+    font-size: clamp(40px, 5.5vw, 68px);
+    line-height: 1;
+    letter-spacing: -0.01em;
+    margin-bottom: 18px;
+    color: #fff;
+  }
+
+  .wc-hero h1 .accent {
+    color: var(--wc-cyan);
+    text-shadow: 0 0 30px rgba(0, 234, 255, 0.4);
+  }
+
+  .wc-hero p {
+    font-size: 16px;
+    color: var(--wc-text-dim);
+    line-height: 1.6;
+    max-width: 620px;
+  }
+
+  .wc-hero p .scientist-name {
+    color: var(--wc-amber);
+    font-weight: 600;
+    letter-spacing: 0.01em;
+  }
+
+  /* ========================= STATS ROW ========================= */
+  .wc-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 36px;
+  }
+
+  .wc-stat {
+    padding: 24px 28px;
+    background: rgba(14, 18, 32, 0.5);
+    border: 1px solid var(--wc-border);
+    border-radius: 14px;
+    transition: border-color 0.3s;
+  }
+
+  .wc-stat:hover { border-color: var(--wc-border-bright); }
+
+  .wc-stat-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    color: var(--wc-text-muted);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .wc-stat-value {
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 800;
+    font-size: 32px;
+    letter-spacing: 0.02em;
+    line-height: 1;
+  }
+
+  .wc-stat-value.cyan { color: var(--wc-cyan); text-shadow: 0 0 20px rgba(0, 234, 255, 0.3); }
+  .wc-stat-value.green { color: var(--wc-green); text-shadow: 0 0 20px rgba(0, 255, 163, 0.25); }
+  .wc-stat-value.amber { color: var(--wc-amber); text-shadow: 0 0 20px rgba(255, 170, 0, 0.25); }
+
+  /* ========================= MISSION GRID ========================= */
+  .wc-mission-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+
+  .wc-mission-card {
+    position: relative;
+    padding: 22px;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+                box-shadow 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+                border-color 0.3s;
+    background:
+      linear-gradient(135deg,
+        color-mix(in srgb, var(--accent) 18%, transparent) 0%,
+        color-mix(in srgb, var(--accent) 4%, transparent) 100%),
+      rgba(14, 18, 32, 0.7);
+    border: 1px solid color-mix(in srgb, var(--accent) 15%, transparent);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 170px;
+  }
+
+  /* Fallback for browsers w/o color-mix */
+  @supports not (background: color-mix(in srgb, red, blue)) {
+    .wc-mission-card {
+      background: var(--accent-bg, rgba(14, 18, 32, 0.7));
+      border-color: var(--accent-border, rgba(100, 130, 180, 0.15));
+    }
+  }
+
+  .wc-mission-card::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: radial-gradient(
+      circle at var(--mx, 50%) var(--my, 0%),
+      color-mix(in srgb, var(--accent) 20%, transparent) 0%,
+      transparent 60%
+    );
+    opacity: 0;
+    transition: opacity 0.4s;
+    pointer-events: none;
+  }
+
+  .wc-mission-card:hover {
+    transform: translateY(-3px);
+    border-color: var(--accent);
+    box-shadow:
+      0 16px 40px rgba(0, 0, 0, 0.5),
+      0 0 50px color-mix(in srgb, var(--accent) 20%, transparent);
+  }
+
+  .wc-mission-card:hover::before { opacity: 1; }
+
+  .wc-mission-card:active { transform: translateY(-1px); }
+
+  .wc-card-top {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .wc-card-icon {
+    width: 52px;
+    height: 52px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    background: rgba(0, 0, 0, 0.35);
+    border: 1px solid color-mix(in srgb, var(--accent) 20%, transparent);
+    color: var(--accent);
+    transition: all 0.3s;
+  }
+
+  .wc-mission-card:hover .wc-card-icon {
+    background: rgba(0, 0, 0, 0.5);
+    border-color: var(--accent);
+    box-shadow: 0 0 20px color-mix(in srgb, var(--accent) 40%, transparent);
+  }
+
+  .wc-card-icon svg {
+    width: 26px;
+    height: 26px;
+  }
+
+  .wc-card-content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .wc-card-title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 6px;
+  }
+
+  .wc-card-title {
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    color: #fff;
+    letter-spacing: 0.01em;
+    line-height: 1.2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .wc-card-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--wc-text-muted);
+    letter-spacing: 0.15em;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .wc-card-subject {
+    font-size: 13px;
+    color: var(--wc-text-dim);
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .wc-card-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 16px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .wc-card-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+
+  .wc-card-status .dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 8px var(--accent);
+    animation: wc-pulse-soft 2s ease-in-out infinite;
+  }
+
+  @keyframes wc-pulse-soft {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  .wc-mission-card.done .wc-card-status {
+    color: var(--wc-green);
+  }
+  .wc-mission-card.done .wc-card-status .dot {
+    background: var(--wc-green);
+    box-shadow: 0 0 8px var(--wc-green);
+    animation: none;
+  }
+
+  .wc-card-arrow {
+    color: var(--wc-text-dim);
+    transition: all 0.25s;
+    display: flex;
+    align-items: center;
+  }
+
+  .wc-card-arrow svg { width: 20px; height: 20px; }
+
+  .wc-mission-card:hover .wc-card-arrow {
+    color: var(--accent);
+    transform: translateX(4px);
+  }
+
+  /* ============ MODAL / SIMULATION STAGE ============ */
+  .wc-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(3, 6, 13, 0.88);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    z-index: 9998;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s, visibility 0.3s;
+  }
+
+  .wc-modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .wc-modal {
+    background: linear-gradient(165deg, var(--wc-bg-2) 0%, var(--wc-bg-0) 100%);
+    border: 1px solid var(--wc-border-bright);
+    border-radius: 18px;
+    width: 100%;
+    max-width: 880px;
+    max-height: 92vh;
+    overflow-y: auto;
+    box-shadow:
+      0 40px 80px rgba(0, 0, 0, 0.8),
+      0 0 80px rgba(0, 234, 255, 0.1);
+    transform: scale(0.94) translateY(20px);
+    transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .wc-modal-overlay.active .wc-modal {
+    transform: scale(1) translateY(0);
+  }
+
+  .wc-modal-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 28px;
+    border-bottom: 1px solid var(--wc-border);
+    position: sticky;
+    top: 0;
+    background: rgba(10, 13, 23, 0.95);
+    backdrop-filter: blur(10px);
+    z-index: 2;
+  }
+
+  .wc-modal-head-title {
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--wc-text);
+  }
+
+  .wc-modal-icon-box {
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    background: rgba(0,0,0,0.4);
+    border: 1px solid var(--wc-border-bright);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--wc-cyan);
+  }
+
+  .wc-modal-icon-box svg { width: 20px; height: 20px; }
+
+  .wc-close {
+    background: transparent;
+    border: 1px solid var(--wc-border-bright);
+    color: var(--wc-cyan);
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+    line-height: 1;
+  }
+
+  .wc-close:hover {
+    background: var(--wc-red);
+    border-color: var(--wc-red);
+    color: #fff;
+    transform: rotate(90deg);
+  }
+
+  .wc-modal-body { padding: 26px; }
+
+  .wc-sim-stage {
+    background:
+      radial-gradient(ellipse at center, rgba(0, 234, 255, 0.06), transparent 70%),
+      linear-gradient(180deg, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.7));
+    border: 1px solid var(--wc-border);
+    border-radius: 12px;
+    min-height: 320px;
+    padding: 20px;
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .wc-controls {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 14px;
+    margin-bottom: 20px;
+  }
+
+  .wc-control-group {
+    padding: 14px 16px;
+    background: rgba(0, 0, 0, 0.35);
+    border: 1px solid var(--wc-border);
+    border-radius: 10px;
+  }
+
+  .wc-control-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--wc-amber);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+
+  .wc-control-label .value {
+    color: var(--wc-cyan);
+    font-weight: 600;
+  }
+
+  .wc-control-group input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 5px;
+    border-radius: 3px;
+    background: linear-gradient(90deg, var(--wc-cyan) 0%, var(--wc-amber) 100%);
+    outline: none;
+  }
+
+  .wc-control-group input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: #fff;
+    border: 2px solid var(--wc-cyan);
+    cursor: pointer;
+    box-shadow: 0 0 10px var(--wc-cyan);
+  }
+
+  .wc-control-group input[type="range"]::-moz-range-thumb {
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    background: #fff;
+    border: 2px solid var(--wc-cyan);
+    cursor: pointer;
+  }
+
+  .wc-btn {
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 11px 18px;
+    background: linear-gradient(135deg, var(--wc-cyan) 0%, #008fb5 100%);
+    color: #000;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 4px 16px rgba(0, 234, 255, 0.3);
+    text-decoration: none;
+    display: inline-block;
+  }
+
+  .wc-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 24px rgba(0, 234, 255, 0.5);
+  }
+
+  .wc-btn-amber {
+    background: linear-gradient(135deg, var(--wc-amber) 0%, #cc7700 100%);
+    box-shadow: 0 4px 16px rgba(255, 170, 0, 0.3);
+  }
+
+  .wc-btn-amber:hover {
+    box-shadow: 0 8px 24px rgba(255, 170, 0, 0.5);
+  }
+
+  .wc-btn-ghost {
+    background: transparent;
+    color: var(--wc-cyan);
+    border: 1px solid var(--wc-border-bright);
+    box-shadow: none;
+  }
+
+  .wc-btn-ghost:hover {
+    background: rgba(0, 234, 255, 0.1);
+    box-shadow: 0 0 20px rgba(0, 234, 255, 0.2);
+  }
+
+  .wc-sim-footer {
+    display: flex;
+    gap: 12px;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    align-items: center;
+    padding-top: 16px;
+    border-top: 1px solid var(--wc-border);
+  }
+
+  .wc-sim-readout {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--wc-text-dim);
+    flex: 1;
+    min-width: 200px;
+  }
+
+  .wc-sim-readout strong {
+    color: var(--wc-green);
+    font-weight: 600;
+  }
+
+  /* ========== SIMULATION SCENES ========== */
+
+  /* Volcano */
+  .wc-volcano-scene {
+    position: relative;
+    height: 320px;
+    background: linear-gradient(180deg, #1a0d2e 0%, #3d1a1a 70%, #1a0a0a 100%);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .wc-volcano-body {
+    position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+    width: 0; height: 0;
+    border-left: 140px solid transparent; border-right: 140px solid transparent;
+    border-bottom: 200px solid #3a2414;
+    filter: drop-shadow(0 0 20px rgba(255, 100, 0, 0.4));
+  }
+  .wc-volcano-crater {
+    position: absolute; bottom: 195px; left: 50%; transform: translateX(-50%);
+    width: 60px; height: 18px;
+    background: radial-gradient(ellipse at center, #ffaa00 0%, #ff2d00 50%, #4a0000 100%);
+    border-radius: 50%;
+    box-shadow: 0 0 30px #ff5500;
+  }
+  .wc-lava-particle {
+    position: absolute; bottom: 210px; left: 50%;
+    width: 8px; height: 8px; border-radius: 50%;
+    background: radial-gradient(circle, #ffd061, #ff2d00);
+    box-shadow: 0 0 12px #ff5500;
+    pointer-events: none;
+  }
+
+  /* Dig */
+  .wc-dig-grid {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 2px;
+    background: #1a0f05;
+    border-radius: 10px;
+    padding: 4px;
+    aspect-ratio: 10 / 6;
+    max-width: 100%;
+  }
+  .wc-dig-cell {
+    background: linear-gradient(135deg, #5a3a1a, #3d2510);
+    border-radius: 2px;
+    position: relative;
+    transition: all 0.3s;
+    cursor: crosshair;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .wc-dig-cell.excavated {
+    background: linear-gradient(135deg, #2a1a0a, #15100a);
+    box-shadow: inset 0 0 8px rgba(0,0,0,0.8);
+  }
+  .wc-dig-cell.revealed {
+    background: linear-gradient(135deg, rgba(0, 234, 255, 0.3), rgba(255, 170, 0, 0.3));
+    animation: wc-reveal 0.4s ease;
+  }
+  @keyframes wc-reveal {
+    0% { transform: scale(0) rotate(-180deg); }
+    100% { transform: scale(1) rotate(0); }
+  }
+
+  /* Crystal */
+  .wc-crystal-scene {
+    position: relative;
+    height: 280px;
+    background: linear-gradient(180deg, #2a3050 0%, #1a2040 100%);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: background 0.8s;
+  }
+  .wc-crystal-scene.dark { background: linear-gradient(180deg, #000014 0%, #000008 100%); }
+  .wc-crystal {
+    position: absolute;
+    width: 0; height: 0;
+    border-left: 20px solid transparent; border-right: 20px solid transparent;
+    border-bottom: 50px solid rgba(200, 200, 220, 0.7);
+    transition: all 0.8s;
+  }
+  .wc-crystal-scene.dark .wc-crystal {
+    border-bottom-color: var(--glow-color, #00ffa3);
+    filter: drop-shadow(0 0 15px var(--glow-color, #00ffa3)) drop-shadow(0 0 30px var(--glow-color, #00ffa3));
+  }
+  .wc-toggle {
+    position: relative;
+    width: 64px; height: 32px;
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid var(--wc-border-bright);
+    border-radius: 16px;
+    cursor: pointer;
+    transition: all 0.3s;
+    flex-shrink: 0;
+  }
+  .wc-toggle::after {
+    content: "";
+    position: absolute;
+    top: 3px; left: 3px;
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    background: var(--wc-text-dim);
+    transition: all 0.3s;
+  }
+  .wc-toggle.on { background: rgba(0, 234, 255, 0.15); border-color: var(--wc-cyan); }
+  .wc-toggle.on::after { left: 35px; background: var(--wc-cyan); box-shadow: 0 0 12px var(--wc-cyan); }
+
+  /* Tornado */
+  .wc-tornado-scene {
+    position: relative; height: 300px;
+    background: linear-gradient(180deg, #0a1a2a 0%, #050810 100%);
+    border-radius: 10px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .wc-vortex { position: relative; width: 200px; height: 200px; }
+  .wc-vortex-ring {
+    position: absolute; top: 50%; left: 50%;
+    border: 2px solid rgba(0, 234, 255, 0.5);
+    border-top-color: transparent;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    animation: wc-spin linear infinite;
+  }
+  @keyframes wc-spin { to { transform: translate(-50%, -50%) rotate(360deg); } }
+
+  /* Detective */
+  .wc-rocks { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; position: relative; }
+  .wc-rock {
+    aspect-ratio: 1;
+    border-radius: 10px;
+    position: relative;
+    cursor: none;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 72px;
+    transition: transform 0.3s;
+  }
+  .wc-rock:hover { transform: scale(1.05); }
+  .wc-rock.pyrite { background: linear-gradient(135deg, #ffd061 0%, #a67800 100%); }
+  .wc-rock.quartz { background: linear-gradient(135deg, #e0f0ff 0%, #7080a0 100%); }
+  .wc-rock.pumice { background: linear-gradient(135deg, #5a5560 0%, #2a252a 100%); }
+  .wc-rock-label {
+    position: absolute; bottom: 8px; left: 8px; right: 8px;
+    padding: 6px 10px;
+    background: rgba(0, 0, 0, 0.85);
+    border-radius: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--wc-cyan);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: all 0.3s;
+  }
+  .wc-rock:hover .wc-rock-label { opacity: 1; transform: translateY(0); }
+  .wc-magnifier {
+    position: absolute;
+    width: 80px; height: 80px;
+    border: 3px solid var(--wc-cyan);
+    border-radius: 50%;
+    pointer-events: none;
+    box-shadow: 0 0 20px var(--wc-cyan), inset 0 0 20px rgba(0, 234, 255, 0.3);
+    opacity: 0;
+    transition: opacity 0.2s;
+    z-index: 5;
+    backdrop-filter: brightness(1.4) contrast(1.2);
+    transform: translate(-50%, -50%);
+  }
+  .wc-magnifier::after {
+    content: "";
+    position: absolute;
+    bottom: -22px; right: -10px;
+    width: 6px; height: 26px;
+    background: var(--wc-cyan);
+    border-radius: 3px;
+    transform: rotate(-45deg);
+    transform-origin: top;
+  }
+
+  /* Potion */
+  .wc-potion-scene { display: flex; align-items: flex-end; justify-content: center; height: 280px; gap: 20px; }
+  .wc-beaker {
+    position: relative;
+    width: 140px; height: 200px;
+    border: 3px solid rgba(255, 255, 255, 0.6);
+    border-top: none;
+    border-radius: 0 0 20px 20px;
+    background: rgba(255, 255, 255, 0.05);
+    overflow: hidden;
+  }
+  .wc-beaker-liquid {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 70%;
+    background: var(--potion-color, #00eaff);
+    transition: background 0.8s, height 0.4s;
+    box-shadow: 0 0 20px var(--potion-color, #00eaff);
+  }
+  .wc-beaker-liquid::before {
+    content: "";
+    position: absolute;
+    top: -6px; left: 0; right: 0; height: 12px;
+    background: var(--potion-color, #00eaff);
+    border-radius: 50%;
+    opacity: 0.6;
+    animation: wc-wave 2s ease-in-out infinite;
+  }
+  @keyframes wc-wave { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+  .wc-bubble {
+    position: absolute;
+    bottom: 0; width: 8px; height: 8px;
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 50%;
+    animation: wc-bubble-rise 2s ease-in infinite;
+  }
+  @keyframes wc-bubble-rise {
+    0% { bottom: 0; opacity: 0; }
+    20% { opacity: 1; }
+    100% { bottom: 100%; opacity: 0; }
+  }
+
+  /* Rocket */
+  .wc-rocket-scene {
+    position: relative; height: 320px;
+    background: linear-gradient(180deg, #030617 0%, #0a1a3a 50%, #2a3a5a 100%);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .wc-rocket {
+    position: absolute; bottom: 20px; left: 50%;
+    transform: translateX(-50%);
+    font-size: 60px;
+    z-index: 2;
+  }
+  .wc-rocket-flame {
+    position: absolute; bottom: -20px; left: 50%;
+    transform: translateX(-50%);
+    width: 24px; height: 40px;
+    background: radial-gradient(ellipse at top, #fff, #ffaa00 40%, #ff2d00 80%, transparent);
+    border-radius: 50% 50% 20% 20%;
+    opacity: 0;
+    filter: blur(1px);
+  }
+  .wc-rocket-flame.active { opacity: 1; animation: wc-flame-flicker 0.08s linear infinite; }
+  @keyframes wc-flame-flicker {
+    0%, 100% { height: 40px; }
+    50% { height: 48px; }
+  }
+
+  /* Color water */
+  .wc-color-buttons {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-top: 16px;
+  }
+  .wc-color-btn {
+    padding: 14px;
+    border-radius: 10px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    background: var(--c);
+    color: #fff;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: transform 0.2s;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  }
+  .wc-color-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px var(--c); }
+
+  /* Bubbles */
+  .wc-bubbles-canvas {
+    width: 100%;
+    height: 320px;
+    border-radius: 10px;
+    background: radial-gradient(ellipse at center, #0a2040, #050818);
+    display: block;
+    cursor: pointer;
+  }
+
+  /* Underwater */
+  .wc-uw-scene {
+    position: relative; height: 280px;
+    border-radius: 10px;
+    overflow: hidden;
+    transition: background 0.8s;
+  }
+  .wc-uw-scene.land { background: linear-gradient(180deg, #4a5a8a 0%, #8a6a4a 60%, #3a2410 100%); }
+  .wc-uw-scene.sea { background: linear-gradient(180deg, #0a3050 0%, #05203a 60%, #031020 100%); }
+  .wc-uw-scene.sea::before {
+    content: "";
+    position: absolute; inset: 0;
+    background-image:
+      radial-gradient(2px 2px at 20% 20%, rgba(255,255,255,0.4), transparent),
+      radial-gradient(1px 1px at 70% 40%, rgba(255,255,255,0.3), transparent),
+      radial-gradient(1.5px 1.5px at 45% 60%, rgba(255,255,255,0.5), transparent),
+      radial-gradient(1px 1px at 80% 75%, rgba(255,255,255,0.3), transparent);
+    background-size: 300px 300px;
+    animation: wc-bubbles-drift 12s linear infinite;
+  }
+  @keyframes wc-bubbles-drift {
+    from { transform: translateY(0); }
+    to { transform: translateY(-300px); }
+  }
+
+  /* ========== CAREER POPUP ========== */
+  .wc-career-popup {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 340px;
+    background: linear-gradient(135deg, rgba(14, 18, 32, 0.98), rgba(5, 7, 13, 0.98));
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--wc-amber);
+    border-radius: 16px;
+    padding: 24px 20px 20px;
+    z-index: 9999;
+    transform: translateX(400px);
+    transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+    box-shadow:
+      0 20px 50px rgba(0, 0, 0, 0.7),
+      0 0 50px rgba(255, 170, 0, 0.25);
+  }
+  .wc-career-popup.active { transform: translateX(0); }
+  .wc-career-popup::before {
+    content: "MISSION COMPLETE";
+    position: absolute;
+    top: -12px; left: 16px;
+    padding: 4px 10px;
+    background: var(--wc-amber);
+    color: #000;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    border-radius: 4px;
+  }
+  .wc-career-popup-close {
+    position: absolute;
+    top: 14px; right: 14px;
+    background: transparent;
+    border: none;
+    color: var(--wc-text-dim);
+    font-size: 20px;
+    cursor: pointer;
+    line-height: 1;
+  }
+  .wc-career-icon-lg {
+    font-size: 36px;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .wc-career-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--wc-cyan);
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    margin-top: 8px;
+  }
+  .wc-career-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--wc-amber);
+    margin-bottom: 10px;
+    line-height: 1.1;
+  }
+  .wc-career-desc {
+    font-size: 13px;
+    color: var(--wc-text-dim);
+    line-height: 1.5;
+    margin-bottom: 14px;
+  }
+
+  /* ========== RESPONSIVE ========== */
+  @media (max-width: 1200px) {
+    .wc-mission-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+  @media (max-width: 900px) {
+    #wc-mission-control { padding: 22px 20px 60px; }
+    .wc-mission-grid { grid-template-columns: repeat(2, 1fr); }
+    .wc-stats { grid-template-columns: 1fr; }
+    .wc-hero h1 { font-size: 44px; }
+  }
+  @media (max-width: 600px) {
+    #wc-mission-control { padding: 18px 14px 50px; }
+    .wc-header { flex-wrap: wrap; gap: 14px; }
+    .wc-header-right { width: 100%; justify-content: flex-end; }
+    .wc-mission-grid { grid-template-columns: 1fr; }
+    .wc-hero h1 { font-size: 36px; }
+    .wc-hero p { font-size: 14px; }
+    .wc-career-popup { left: 16px; right: 16px; width: auto; bottom: 16px; }
+    .wc-rocks { grid-template-columns: 1fr; }
+    .wc-stat { padding: 20px; }
+    .wc-stat-value { font-size: 26px; }
+  }
+</style>
+
+<!-- ============ STRUCTURE ============ -->
+<div class="wc-shell">
+
+  <!-- HEADER -->
+  <header class="wc-header">
+    <div class="wc-logo">
+      <div class="wc-logo-mark">
+        <!-- Replace with: <img src="{{ 'logo.svg' | asset_url }}" alt="WonderCub Labs"> -->
+        <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" fill="none">
+          <ellipse cx="24" cy="24" rx="20" ry="7" stroke="#00eaff" stroke-width="1.6" transform="rotate(45 24 24)"/>
+          <ellipse cx="24" cy="24" rx="20" ry="7" stroke="#00eaff" stroke-width="1.6" transform="rotate(-45 24 24)"/>
+          <ellipse cx="24" cy="24" rx="20" ry="7" stroke="#00eaff" stroke-width="1.6"/>
+          <circle cx="24" cy="24" r="3" fill="#ffaa00"/>
+        </svg>
+      </div>
+      <div class="wc-logo-text">
+        <div class="brand"><span class="accent">Wonder</span>Cub Labs</div>
+        <div class="sub">Mission Control</div>
+      </div>
+    </div>
+
+    <div class="wc-header-right">
+      <div class="wc-user-pill">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="8" r="4"/>
+          <path d="M4 21 C4 16 8 14 12 14 C16 14 20 16 20 21"/>
+        </svg>
+        <input type="text" id="wc-name" placeholder="Enter Name" maxlength="16" autocomplete="off" />
+      </div>
+      <button class="wc-logout-btn" id="wc-logout" aria-label="Log out">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 4 H5 C4 4 3 5 3 6 V18 C3 19 4 20 5 20 H9"/>
+          <path d="M16 17 L21 12 L16 7"/>
+          <path d="M21 12 H9"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="wc-hero">
+    <h1>Mission <span class="accent">Map</span></h1>
+    <p>
+      Welcome, Scientist <span class="scientist-name" id="wc-scientist-name">[Enter Name]</span>.
+      Select a mission to begin your experiment. Each lab features interactive simulations and a digital journal.
+    </p>
+  </section>
+
+  <!-- STATS ROW -->
+  <section class="wc-stats">
+    <div class="wc-stat">
+      <div class="wc-stat-label">Missions Available</div>
+      <div class="wc-stat-value cyan" id="wc-stat-missions">10</div>
+    </div>
+    <div class="wc-stat">
+      <div class="wc-stat-label">Lab Simulations</div>
+      <div class="wc-stat-value green">ACTIVE</div>
+    </div>
+    <div class="wc-stat">
+      <div class="wc-stat-label">Security Clearance</div>
+      <div class="wc-stat-value amber" id="wc-stat-clearance">LVL-1</div>
+    </div>
+  </section>
+
+  <!-- MISSION GRID -->
+  <section class="wc-mission-grid" id="wc-mission-grid"></section>
+
+</div>
+
+<!-- MODAL -->
+<div class="wc-modal-overlay" id="wc-modal-overlay">
+  <div class="wc-modal" role="dialog" aria-modal="true" aria-labelledby="wc-modal-title">
+    <div class="wc-modal-head">
+      <div class="wc-modal-head-title">
+        <span class="wc-modal-icon-box" id="wc-modal-icon"></span>
+        <span id="wc-modal-title">MISSION</span>
+      </div>
+      <button class="wc-close" id="wc-modal-close" aria-label="Close">✕</button>
+    </div>
+    <div class="wc-modal-body" id="wc-modal-body"></div>
+  </div>
+</div>
+
+<!-- CAREER POPUP -->
+<div class="wc-career-popup" id="wc-career-popup">
+  <button class="wc-career-popup-close" id="wc-career-close" aria-label="Close">✕</button>
+  <div class="wc-career-icon-lg" id="wc-career-icon">🎓</div>
+  <div class="wc-career-label">Real-World Career</div>
+  <div class="wc-career-title" id="wc-career-title">Volcanologist</div>
+  <div class="wc-career-desc" id="wc-career-desc">Scientists who study volcanoes and magma.</div>
+  <button class="wc-btn wc-btn-amber" id="wc-career-continue">Continue Research →</button>
+</div>
+
+</div><!-- /#wc-mission-control -->
+
+<!-- ============ SCRIPT ============ -->
+<script>
+(function(){
+  'use strict';
+
+  /* ==========================================================
+     SVG ICON LIBRARY (outline style, accent stroke)
+  ========================================================== */
+  const ICONS = {
+    volcano: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20 L8 11 L11 13 L13 10 L16 13 L21 20 Z"/><path d="M9 5 L9 7"/><path d="M12 3 L12 6"/><path d="M15 5 L15 7"/></svg>',
+    archeology: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3 C10 3, 6 7, 6 11 L13 11 C13 7, 17 5, 20 7 Z"/><path d="M4 20 L10 14"/><path d="M8 12 L12 16"/></svg>',
+    glowcrystal: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M6 4 L18 4 L22 10 L12 22 L2 10 Z"/><path d="M2 10 L22 10"/><path d="M10 4 L12 10 L14 4"/></svg>',
+    tornado: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M3 7 Q7 4, 11 7 T19 7"/><path d="M5 12 Q9 9, 13 12 T21 12"/><path d="M4 17 Q8 14, 12 17 T20 17"/></svg>',
+    detective: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="10" cy="10" r="6"/><path d="M14.5 14.5 L20 20"/></svg>',
+    potion: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3 L15 3"/><path d="M10 3 L10 10 L5 19 C4.5 20, 5 21, 6 21 L18 21 C19 21, 19.5 20, 19 19 L14 10 L14 3"/><path d="M8 15 L16 15"/></svg>',
+    rocket: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M12 2 C15 5, 16 9, 16 13 L16 16 L8 16 L8 13 C8 9, 9 5, 12 2 Z"/><path d="M8 16 L5 19 L5 22 L8 20"/><path d="M16 16 L19 19 L19 22 L16 20"/><circle cx="12" cy="9" r="1.5"/></svg>',
+    colorwater: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M12 3 C12 3, 6 10, 6 15 C6 18.5, 8.7 21, 12 21 C15.3 21, 18 18.5, 18 15 C18 10, 12 3, 12 3 Z"/><path d="M9 15 C9 16.6, 10.3 18, 12 18"/></svg>',
+    bubbles: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="7"/><circle cx="9" cy="9" r="1.2" fill="currentColor"/></svg>',
+    underwater: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M12 3 C12 6, 15 7, 15 11 C15 14, 13.7 16, 12 16 C13 14, 12 13, 11 12 C11 13, 10 14, 9 15 C9 12, 11 10, 12 9 C12 7, 12 5, 12 3 Z"/><path d="M8 18 L16 18"/><path d="M6 21 L18 21"/></svg>'
+  };
+
+  /* ==========================================================
+     MISSION DATA
+     -> Replace shopHandle values with your real Shopify product handles.
+  ========================================================== */
+  const shopBase = '/products/';
+  const MISSIONS = [
+    {
+      id: 'volcano', n: 1, accent: '#ff6a4c', tintBg: '#3a1510',
+      title: 'Volcano Eruption Adv…', fullTitle: 'Volcano Eruption Adventure',
+      subject: 'Magma dynamics & eruption mechanics',
+      shopHandle: 'volcano-lab-kit',
+      career: { title: 'Volcanologist', icon: '🧑‍🚒', desc: 'Scientists who study volcanoes and magma chambers to help predict eruptions and save lives.' }
+    },
+    {
+      id: 'archeology', n: 2, accent: '#d4a04a', tintBg: '#2e2410',
+      title: 'Rock Archeologist Exp…', fullTitle: 'Rock Archeologist Expedition',
+      subject: 'Hydro-excavation & mineral discovery',
+      shopHandle: 'rock-archeology-kit',
+      career: { title: 'Paleontologist', icon: '🦖', desc: 'Paleontologists uncover fossils and rocks to reveal what life on Earth looked like millions of years ago!' }
+    },
+    {
+      id: 'glowcrystal', n: 3, accent: '#b967ff', tintBg: '#241238',
+      title: 'Glow Crystal Quest', fullTitle: 'Glow Crystal Quest',
+      subject: 'Crystal lattice & phosphorescence',
+      shopHandle: 'glow-crystal-kit',
+      career: { title: 'Mineralogist', icon: '🔬', desc: 'Mineralogists study how crystals form and why they glow, sparkle, or change color.' }
+    },
+    {
+      id: 'tornado', n: 4, accent: '#00d0ff', tintBg: '#0a2640',
+      title: 'Whirling Water Tornado', fullTitle: 'Whirling Water Tornado',
+      subject: 'Fluid dynamics & angular momentum',
+      shopHandle: 'tornado-vortex-kit',
+      career: { title: 'Meteorologist', icon: '🌩️', desc: 'Meteorologists predict storms and tornadoes by studying wind, water, and atmospheric pressure.' }
+    },
+    {
+      id: 'detective', n: 5, accent: '#a8b2c6', tintBg: '#1a1f2e',
+      title: 'Rock Detective Hunt', fullTitle: 'Rock Detective Hunt',
+      subject: 'Mineral identification & testing',
+      shopHandle: 'rock-detective-kit',
+      career: { title: 'Geologist', icon: '🗻', desc: 'Geologists read the Earth like a book — identifying minerals and rocks to understand how our planet works.' }
+    },
+    {
+      id: 'potion', n: 6, accent: '#3fd687', tintBg: '#0f2e1d',
+      title: 'Bubbling Potion Mixer', fullTitle: 'Bubbling Potion Mixer',
+      subject: 'Acid-base chemistry & pH indicators',
+      shopHandle: 'potion-mixer-kit',
+      career: { title: 'Chemist', icon: '⚗️', desc: 'Chemists mix substances to invent medicines, food flavors, new materials — real life potion makers!' }
+    },
+    {
+      id: 'rocket', n: 7, accent: '#4a8dff', tintBg: '#0e1e3e',
+      title: 'Rocket Blast-Off Mission', fullTitle: 'Rocket Blast-Off Mission',
+      subject: 'Aerodynamics & energy conversion',
+      shopHandle: 'rocket-launch-kit',
+      career: { title: 'Aerospace Engineer', icon: '🛸', desc: 'Aerospace engineers design rockets, satellites, and airplanes to send humans to space!' }
+    },
+    {
+      id: 'colorwater', n: 8, accent: '#c574ff', tintBg: '#2a1440',
+      title: 'Magic Color-Changing …', fullTitle: 'Magic Color-Changing Water',
+      subject: 'pH scale & neutralization reactions',
+      shopHandle: 'color-water-kit',
+      career: { title: 'Chemical Engineer', icon: '🧫', desc: 'Chemical engineers use color reactions to test water safety, invent products, and clean up pollution.' }
+    },
+    {
+      id: 'bubbles', n: 9, accent: '#4fd8c8', tintBg: '#0f2a2a',
+      title: 'Unpoppable Bubbles Ma…', fullTitle: 'Unpoppable Bubbles Magic',
+      subject: 'Surface tension & elasticity physics',
+      shopHandle: 'unpoppable-bubbles-kit',
+      career: { title: 'Physicist', icon: '⚛️', desc: 'Physicists study how the universe works — from bubbles to black holes and quantum particles.' }
+    },
+    {
+      id: 'underwater', n: 10, accent: '#d87540', tintBg: '#351c10',
+      title: 'Underwater Volcano', fullTitle: 'Underwater Volcano',
+      subject: 'Density, polarity & hydrothermal vents',
+      shopHandle: 'underwater-volcano-kit',
+      career: { title: 'Oceanographer', icon: '🤿', desc: 'Oceanographers explore the deep sea, map underwater volcanoes, and discover amazing creatures.' }
+    }
+  ];
+
+  const CLEARANCE_TIERS = [
+    [0, 'LVL-1'], [2, 'LVL-2'], [4, 'LVL-3'], [6, 'LVL-4'], [8, 'LVL-5'], [10, 'LVL-Ω']
+  ];
+
+  const state = { scientist: '', completed: new Set() };
+
+  /* DOM refs */
+  const grid = document.getElementById('wc-mission-grid');
+  const nameInput = document.getElementById('wc-name');
+  const logoutBtn = document.getElementById('wc-logout');
+  const scientistNameEl = document.getElementById('wc-scientist-name');
+  const statClearance = document.getElementById('wc-stat-clearance');
+  const statMissions = document.getElementById('wc-stat-missions');
+  const modal = document.getElementById('wc-modal-overlay');
+  const modalClose = document.getElementById('wc-modal-close');
+  const modalTitle = document.getElementById('wc-modal-title');
+  const modalIcon = document.getElementById('wc-modal-icon');
+  const modalBody = document.getElementById('wc-modal-body');
+  const careerPopup = document.getElementById('wc-career-popup');
+  const careerClose = document.getElementById('wc-career-close');
+  const careerContinue = document.getElementById('wc-career-continue');
+  const careerTitle = document.getElementById('wc-career-title');
+  const careerIcon = document.getElementById('wc-career-icon');
+  const careerDesc = document.getElementById('wc-career-desc');
+
+  /* Build the mission grid */
+  function buildGrid(){
+    grid.innerHTML = MISSIONS.map(m => {
+      const accentBg = hexToRgba(m.accent, 0.12);
+      const accentBorder = hexToRgba(m.accent, 0.25);
+      return `
+        <article class="wc-mission-card" data-id="${m.id}"
+          style="--accent:${m.accent}; --accent-bg: linear-gradient(135deg, ${hexToRgba(m.accent, 0.18)}, ${hexToRgba(m.accent, 0.04)}), rgba(14,18,32,0.7); --accent-border:${accentBorder};"
+          role="button" tabindex="0"
+          aria-label="Launch ${m.fullTitle} simulation">
+          <div class="wc-card-top">
+            <div class="wc-card-icon">${ICONS[m.id]}</div>
+            <div class="wc-card-content">
+              <div class="wc-card-title-row">
+                <h3 class="wc-card-title" title="${m.fullTitle}">${m.fullTitle}</h3>
+                <span class="wc-card-num">M-${String(m.n).padStart(2,'0')}</span>
+              </div>
+              <p class="wc-card-subject">${m.subject}</p>
+            </div>
+          </div>
+          <div class="wc-card-bottom">
+            <span class="wc-card-status" id="status-${m.id}"><span class="dot"></span> READY</span>
+            <span class="wc-card-arrow">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 6 L15 12 L9 18"/>
+              </svg>
+            </span>
+          </div>
+        </article>
+      `;
+    }).join('');
+
+    // Hover glow follow + click handlers
+    grid.querySelectorAll('.wc-mission-card').forEach(card => {
+      card.addEventListener('mousemove', e => {
+        const r = card.getBoundingClientRect();
+        card.style.setProperty('--mx', ((e.clientX - r.left)/r.width*100)+'%');
+        card.style.setProperty('--my', ((e.clientY - r.top)/r.height*100)+'%');
+      });
+      card.addEventListener('click', () => launchSim(card.dataset.id));
+      card.addEventListener('keydown', e => {
+        if(e.key === 'Enter' || e.key === ' '){
+          e.preventDefault();
+          launchSim(card.dataset.id);
+        }
+      });
+    });
+  }
+
+  function hexToRgba(hex, alpha){
+    const h = hex.replace('#','');
+    const r = parseInt(h.substring(0,2),16);
+    const g = parseInt(h.substring(2,4),16);
+    const b = parseInt(h.substring(4,6),16);
+    return `rgba(${r},${g},${b},${alpha})`;
+  }
+
+  /* Login / logout handling */
+  function updateScientist(){
+    const v = (nameInput.value || '').trim();
+    state.scientist = v;
+    if(v){
+      scientistNameEl.textContent = v;
+      scientistNameEl.style.color = 'var(--wc-amber)';
+    } else {
+      scientistNameEl.textContent = '[Enter Name]';
+      scientistNameEl.style.color = 'var(--wc-text-muted)';
+    }
+  }
+  nameInput.addEventListener('input', updateScientist);
+  nameInput.addEventListener('keydown', e => {
+    if(e.key === 'Enter') nameInput.blur();
+  });
+  logoutBtn.addEventListener('click', () => {
+    nameInput.value = '';
+    state.completed.clear();
+    updateScientist();
+    updateProgress();
+    grid.querySelectorAll('.wc-mission-card').forEach(c => c.classList.remove('done'));
+    grid.querySelectorAll('.wc-card-status').forEach(s => {
+      s.innerHTML = '<span class="dot"></span> READY';
+    });
+  });
+
+  /* Progress */
+  function updateProgress(){
+    const n = state.completed.size;
+    let tier = 'LVL-1';
+    CLEARANCE_TIERS.forEach(([threshold, label]) => { if(n >= threshold) tier = label; });
+    statClearance.textContent = tier;
+    statMissions.textContent = (MISSIONS.length - n) || '✓';
+  }
+
+  function markComplete(id){
+    state.completed.add(id);
+    const card = grid.querySelector(`[data-id="${id}"]`);
+    const statusEl = document.getElementById('status-'+id);
+    if(card) card.classList.add('done');
+    if(statusEl) statusEl.innerHTML = '<span class="dot"></span> COMPLETE';
+    updateProgress();
+    const m = MISSIONS.find(x => x.id === id);
+    if(m) showCareer(m.career);
+  }
+
+  /* Modal control */
+  function closeModal(){
+    modal.classList.remove('active');
+    setTimeout(() => { modalBody.innerHTML = ''; }, 300);
+  }
+  modalClose.addEventListener('click', closeModal);
+  modal.addEventListener('click', e => { if(e.target === modal) closeModal(); });
+  document.addEventListener('keydown', e => { if(e.key==='Escape') closeModal(); });
+
+  function launchSim(id){
+    const m = MISSIONS.find(x => x.id === id);
+    if(!m) return;
+    modalTitle.textContent = m.fullTitle;
+    modalIcon.innerHTML = ICONS[id];
+    modalIcon.style.color = m.accent;
+    modalIcon.style.borderColor = hexToRgba(m.accent, 0.35);
+    modalBody.innerHTML = '';
+    SIMS[id](modalBody, m);
+    modal.classList.add('active');
+  }
+
+  /* Career popup */
+  function showCareer(c){
+    careerTitle.textContent = c.title;
+    careerIcon.textContent = c.icon;
+    careerDesc.textContent = c.desc;
+    careerPopup.classList.add('active');
+  }
+  careerClose.addEventListener('click', ()=> careerPopup.classList.remove('active'));
+  careerContinue.addEventListener('click', ()=> careerPopup.classList.remove('active'));
+
+  /* ==========================================================
+     SIMULATION BUILDERS
+  ========================================================== */
+  const SIMS = {};
+
+  function completeBar(mission){
+    return `
+      <div class="wc-sim-footer">
+        <div class="wc-sim-readout" id="sim-readout">SYSTEM :: <strong>READY</strong></div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <a class="wc-btn wc-btn-ghost" href="${shopBase}${mission.shopHandle}" target="_blank" rel="noopener">Shop the Lab Kit</a>
+          <button class="wc-btn wc-btn-amber" id="sim-complete">Mark Complete</button>
+        </div>
+      </div>
+    `;
+  }
+
+  function wireComplete(container, id){
+    const btn = container.querySelector('#sim-complete');
+    if(btn) btn.addEventListener('click', () => { markComplete(id); closeModal(); });
+  }
+
+  /* 1. VOLCANO */
+  SIMS.volcano = (c, m) => {
+    c.innerHTML = `
+      <div class="wc-sim-stage">
+        <div class="wc-volcano-scene" id="vs">
+          <div class="wc-volcano-body"></div>
+          <div class="wc-volcano-crater"></div>
+        </div>
+      </div>
+      <div class="wc-controls">
+        <div class="wc-control-group">
+          <div class="wc-control-label"><span>Magma Viscosity</span><span class="value"><span id="v-visc-val">5</span> / 10</span></div>
+          <input type="range" min="1" max="10" value="5" id="v-visc" />
+        </div>
+        <div class="wc-control-group">
+          <div class="wc-control-label"><span>Gas Pressure (kPa)</span><span class="value"><span id="v-press-val">5</span> / 10</span></div>
+          <input type="range" min="1" max="10" value="5" id="v-press" />
+        </div>
+      </div>
+      ${completeBar(m)}
+    `;
+    const visc = c.querySelector('#v-visc'), press = c.querySelector('#v-press');
+    const scene = c.querySelector('#vs');
+    const readout = c.querySelector('#sim-readout');
+    let intervalId;
+    function erupt(){
+      const viscVal = +visc.value, pressVal = +press.value;
+      c.querySelector('#v-visc-val').textContent = viscVal;
+      c.querySelector('#v-press-val').textContent = pressVal;
+      const rate = 1000 / (pressVal * 3 + 2);
+      const boom = pressVal > 7 && viscVal > 6 ? 'STRATOVOLCANO ERUPTION IMMINENT' : pressVal > 5 ? 'ACTIVE FLOW' : 'DORMANT';
+      readout.innerHTML = `VISCOSITY: <strong>${viscVal}</strong> · PRESSURE: <strong>${pressVal}kPa</strong> · STATUS: <strong style="color:${pressVal>7?'var(--wc-red)':'var(--wc-green)'}">${boom}</strong>`;
+      clearInterval(intervalId);
+      intervalId = setInterval(()=>{
+        const p = document.createElement('div');
+        p.className = 'wc-lava-particle';
+        const horizontalSpread = (12 - viscVal) * 3;
+        const dx = (Math.random() - 0.5) * horizontalSpread * 10;
+        const dy = pressVal * 14 + Math.random() * 20;
+        const duration = 700 + (viscVal * 40);
+        scene.appendChild(p);
+        p.animate([
+          { bottom: '210px', left: '50%', transform: 'translate(-50%, 0) scale(1)', opacity: 1 },
+          { bottom: (210 + dy) + 'px', left: 'calc(50% + ' + dx + 'px)', transform: 'translate(-50%, 0) scale(0.6)', opacity: 1, offset: 0.4 },
+          { bottom: '0px', left: 'calc(50% + ' + (dx*2) + 'px)', transform: 'translate(-50%, 0) scale(0.4)', opacity: 0 }
+        ], { duration, easing: 'cubic-bezier(0.3, 0, 0.7, 1)' }).onfinish = ()=> p.remove();
+      }, rate);
+    }
+    [visc, press].forEach(i => i.addEventListener('input', erupt));
+    erupt();
+    modalClose.addEventListener('click', ()=> clearInterval(intervalId), { once: true });
+    wireComplete(c, m.id);
+  };
+
+  /* 2. ARCHEOLOGY */
+  SIMS.archeology = (c, m) => {
+    const TREASURES = ['🦴','🦖','🏺','🪨','💎','🐚'];
+    c.innerHTML = `
+      <div class="wc-sim-stage">
+        <div style="text-align:center; font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--wc-amber); letter-spacing:0.2em; margin-bottom:12px;">
+          CLICK &amp; DRAG TO HYDRO-EXCAVATE
+        </div>
+        <div class="wc-dig-grid" id="dig"></div>
+      </div>
+      <div class="wc-controls">
+        <div class="wc-control-group" style="grid-column: 1 / -1;">
+          <div class="wc-control-label"><span>Artifacts Discovered</span><span class="value" id="dig-count">0 / 6</span></div>
+          <div style="font-size:12px; color:var(--wc-text-dim); line-height:1.4;">Hydro-excavation uses pressurized water to gently reveal buried artifacts without damaging them. Real archaeologists use this method in delicate digs!</div>
+        </div>
+      </div>
+      ${completeBar(m)}
+    `;
+    const dig = c.querySelector('#dig');
+    const totalCells = 60;
+    const treasurePositions = new Set();
+    while(treasurePositions.size < 6) treasurePositions.add(Math.floor(Math.random()*totalCells));
+    const treasureMap = {};
+    [...treasurePositions].forEach((p,i)=> treasureMap[p] = TREASURES[i]);
+    let found = 0;
+    for(let i=0;i<totalCells;i++){
+      const cell = document.createElement('div');
+      cell.className = 'wc-dig-cell';
+      cell.dataset.idx = i;
+      dig.appendChild(cell);
+    }
+    let down = false;
+    const countEl = c.querySelector('#dig-count');
+    const readout = c.querySelector('#sim-readout');
+    function excavate(cell){
+      if(!cell || !cell.classList.contains('wc-dig-cell') || cell.classList.contains('excavated')) return;
+      cell.classList.add('excavated');
+      const idx = +cell.dataset.idx;
+      if(treasureMap[idx]){
+        cell.classList.add('revealed');
+        cell.textContent = treasureMap[idx];
+        found++;
+        countEl.textContent = found + ' / 6';
+        readout.innerHTML = `ARTIFACT FOUND: <strong>${treasureMap[idx]}</strong> · TOTAL: <strong>${found}/6</strong>`;
+      }
+    }
+    dig.addEventListener('mousedown', e => { down = true; excavate(e.target); });
+    dig.addEventListener('mouseup', ()=> down = false);
+    dig.addEventListener('mouseleave', ()=> down = false);
+    dig.addEventListener('mouseover', e => { if(down) excavate(e.target); });
+    dig.addEventListener('touchstart', e => { e.preventDefault(); const t=e.touches[0]; excavate(document.elementFromPoint(t.clientX,t.clientY)); }, {passive:false});
+    dig.addEventListener('touchmove', e => { e.preventDefault(); const t=e.touches[0]; excavate(document.elementFromPoint(t.clientX,t.clientY)); }, {passive:false});
+    wireComplete(c, m.id);
+  };
+
+  /* 3. GLOW CRYSTAL */
+  SIMS.glowcrystal = (c, m) => {
+    const COLORS = ['#00ffa3','#b967ff','#ff4fd8','#ffd061','#00eaff','#ff5a2d','#7fffd4'];
+    let crystalsHtml = '';
+    for(let i=0;i<14;i++){
+      const left = Math.random()*90 + 2;
+      const bottom = Math.random()*30;
+      const scale = 0.6 + Math.random()*1.2;
+      const color = COLORS[Math.floor(Math.random()*COLORS.length)];
+      const delay = Math.random()*2;
+      crystalsHtml += `<div class="wc-crystal" style="left:${left}%; bottom:${bottom}%; transform:scale(${scale}); --glow-color:${color}; animation-delay:${delay}s;"></div>`;
+    }
+    c.innerHTML = `
+      <div class="wc-sim-stage">
+        <div class="wc-crystal-scene" id="cs">${crystalsHtml}</div>
+      </div>
+      <div class="wc-controls">
+        <div class="wc-control-group" style="grid-column: 1 / -1; display:flex; align-items:center; gap:16px; justify-content:space-between;">
+          <div>
+            <div class="wc-control-label" style="margin-bottom:4px;"><span>Lab Lights</span></div>
+            <div style="font-size:12px; color:var(--wc-text-dim);">Phosphorescent minerals store light and release it slowly in the dark!</div>
+          </div>
+          <div class="wc-toggle" id="glow-toggle"></div>
+        </div>
+      </div>
+      ${completeBar(m)}
+    `;
+    const toggle = c.querySelector('#glow-toggle');
+    const scene = c.querySelector('#cs');
+    const readout = c.querySelector('#sim-readout');
+    toggle.addEventListener('click', ()=>{
+      toggle.classList.toggle('on');
+      scene.classList.toggle('dark');
+      const on = scene.classList.contains('dark');
+      readout.innerHTML = `LIGHTS: <strong style="color:${on?'var(--wc-red)':'var(--wc-green)'}">${on?'OFF · PHOSPHORESCENCE ACTIVE':'ON · STANDBY'}</strong>`;
+    });
+    wireComplete(c, m.id);
+  };
+
+  /* 4. TORNADO */
+  SIMS.tornado = (c, m) => {
+    let rings = '';
+    for(let i=0;i<8;i++){
+      const size = 40 + i*20;
+      const opacity = 1 - i*0.1;
+      rings += `<div class="wc-vortex-ring" style="width:${size}px; height:${size}px; opacity:${opacity}; animation-duration: var(--dur);"></div>`;
+    }
+    c.innerHTML = `
+      <div class="wc-sim-stage">
+        <div class="wc-tornado-scene">
+          <div class="wc-vortex" id="vx" style="--dur:2s;">${rings}</div>
+        </div>
+      </div>
+      <div class="wc-controls">
+        <div class="wc-control-group">
+          <div class="wc-control-label"><span>Centripetal Force (RPM)</span><span class="value"><span id="t-val">50</span></span></div>
+          <input type="range" min="10" max="120" value="50" id="t-speed" />
+        </div>
+        <div class="wc-control-group">
+          <div class="wc-control-label"><span>Category</span></div>
+          <div style="font-family:'Orbitron',sans-serif; font-size:14px; color:var(--wc-amber);" id="t-cat">EF-2 MODERATE</div>
+        </div>
+      </div>
+      ${completeBar(m)}
+    `;
+    const slider = c.querySelector('#t-speed');
+    const vx = c.querySelector('#vx');
+    const readout = c.querySelector('#sim-readout');
+    function update(){
+      const v = +slider.value;
+      c.querySelector('#t-val').textContent = v;
+      const dur = (120 / v).toFixed(2) + 's';
+      vx.style.setProperty('--dur', dur);
+      vx.querySelectorAll('.wc-vortex-ring').forEach(r => r.style.animationDuration = dur);
+      let cat = 'EF-0 WEAK';
+      if(v>30) cat='EF-1 LIGHT'; if(v>50) cat='EF-2 MODERATE'; if(v>75) cat='EF-3 SEVERE'; if(v>100) cat='EF-5 CATASTROPHIC';
+      c.querySelector('#t-cat').textContent = cat;
+      readout.innerHTML = `VORTEX RPM: <strong>${v}</strong> · CATEGORY: <strong>${cat}</strong>`;
+    }
+    slider.addEventListener('input', update);
+    update();
+    wireComplete(c, m.id);
+  };
+
+  /* 5. DETECTIVE */
+  SIMS.detective = (c, m) => {
+    c.innerHTML = `
+      <div class="wc-sim-stage" style="position:relative;">
+        <div class="wc-rocks" id="rocks">
+          <div class="wc-rock pyrite">🪨<div class="wc-rock-label">PYRITE · FeS₂ · "Fool's Gold"</div></div>
+          <div class="wc-rock quartz">💠<div class="wc-rock-label">QUARTZ · SiO₂ · Piezoelectric</div></div>
+          <div class="wc-rock pumice">🗿<div class="wc-rock-label">PUMICE · Volcanic · Floats!</div></div>
+        </div>
+        <div class="wc-magnifier" id="mag"></div>
+      </div>
+      <div class="wc-controls">
+        <div class="wc-control-group" style="grid-column: 1 / -1;">
+          <div style="font-size:12px; color:var(--wc-text-dim); line-height:1.5;">
+            <strong style="color:var(--wc-amber);">FIELD GUIDE:</strong> Move your cursor over each specimen. The magnifier reveals ID and chemistry!
+          </div>
+        </div>
+      </div>
+      ${completeBar(m)}
+    `;
+    const stage = c.querySelector('.wc-sim-stage');
+    const mag = c.querySelector('#mag');
+    const readout = c.querySelector('#sim-readout');
+    stage.addEventListener('mousemove', e => {
+      const r = stage.getBoundingClientRect();
+      mag.style.left = (e.clientX - r.left) + 'px';
+      mag.style.top = (e.clientY - r.top) + 'px';
+      mag.style.opacity = 1;
+    });
+    stage.addEventListener('mouseleave', ()=> mag.style.opacity = 0);
+    c.querySelectorAll('.wc-rock').forEach(rock => {
+      rock.addEventListener('mouseenter', ()=>{
+        const label = rock.querySelector('.wc-rock-label').textContent;
+        readout.innerHTML = `IDENTIFIED: <strong>${label}</strong>`;
+      });
+    });
+    wireComplete(c, m.id);
+  };
+
+  /* 6. POTION */
+  SIMS.potion = (c, m) => {
+    c.innerHTML = `
+      <div class="wc-sim-stage">
+        <div class="wc-potion-scene">
+          <div class="wc-beaker">
+            <div class="wc-beaker-liquid" id="liquid" style="--potion-color:#00eaff;"></div>
+            <div id="bubbles"></div>
+          </div>
+          <div style="text-align:center;">
+            <div style="font-family:'Orbitron',sans-serif; font-size:32px; font-weight:900; color:var(--wc-amber);" id="ph-val">pH 7.0</div>
+            <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--wc-text-dim); letter-spacing:0.15em; text-transform:uppercase;" id="ph-label">Neutral</div>
+          </div>
+        </div>
+      </div>
+      <div class="wc-controls">
+        <div class="wc-control-group">
+          <div class="wc-control-label"><span>🍋 Citric Acid (mL)</span><span class="value"><span id="acid-val">0</span></span></div>
+          <input type="range" min="0" max="10" value="0" id="acid" />
+        </div>
+        <div class="wc-control-group">
+          <div class="wc-control-label"><span>🥞 Baking Soda (g)</span><span class="value"><span id="base-val">0</span></span></div>
+          <input type="range" min="0" max="10" value="0" id="base" />
+        </div>
+      </div>
+      ${completeBar(m)}
+    `;
+    const acid = c.querySelector('#acid'), base = c.querySelector('#base');
+    const liquid = c.querySelector('#liquid');
+    const phVal = c.querySelector('#ph-val');
+    const phLabel = c.querySelector('#ph-label');
+    const bubbles = c.querySelector('#bubbles');
+    const readout = c.querySelector('#sim-readout');
+    function calc(){
+      const a = +acid.value, b = +base.value;
+      c.querySelector('#acid-val').textContent = a;
+      c.querySelector('#base-val').textContent = b;
+      const ph = Math.max(0, Math.min(14, 7 + (b-a) * 0.7));
+      phVal.textContent = 'pH ' + ph.toFixed(1);
+      let color, label;
+      if(ph < 3) { color='#ff2d5f'; label='Strong Acid'; }
+      else if(ph < 6) { color='#ff8c1a'; label='Acidic'; }
+      else if(ph < 8) { color='#00ffa3'; label='Neutral'; }
+      else if(ph < 11) { color='#00a0ff'; label='Basic'; }
+      else { color='#b967ff'; label='Strong Base'; }
+      liquid.style.setProperty('--potion-color', color);
+      phLabel.textContent = label;
+      bubbles.innerHTML = '';
+      if(a > 0 && b > 0){
+        const intensity = Math.min(a, b);
+        for(let i=0;i<intensity*2;i++){
+          const bub = document.createElement('div');
+          bub.className = 'wc-bubble';
+          bub.style.left = (10 + Math.random()*80) + '%';
+          bub.style.animationDelay = Math.random()*2 + 's';
+          bub.style.animationDuration = (1.2 + Math.random()) + 's';
+          bubbles.appendChild(bub);
+        }
+        readout.innerHTML = `REACTION: <strong style="color:var(--wc-green);">FIZZ! Citric acid + Baking soda → CO₂ gas</strong>`;
+      } else {
+        readout.innerHTML = `pH: <strong>${ph.toFixed(1)}</strong> · ${label}`;
+      }
+    }
+    [acid, base].forEach(i => i.addEventListener('input', calc));
+    calc();
+    wireComplete(c, m.id);
+  };
+
+  /* 7. ROCKET */
+  SIMS.rocket = (c, m) => {
+    c.innerHTML = `
+      <div class="wc-sim-stage">
+        <div class="wc-rocket-scene" id="rs">
+          <div class="wc-rocket" id="rkt">🚀<div class="wc-rocket-flame" id="flame"></div></div>
+        </div>
+      </div>
+      <div class="wc-controls">
+        <div class="wc-control-group">
+          <div class="wc-control-label"><span>Fuel Load (%)</span><span class="value"><span id="f-val">50</span></span></div>
+          <input type="range" min="10" max="100" value="50" id="fuel" />
+        </div>
+        <div class="wc-control-group">
+          <div class="wc-control-label"><span>Thrust (N)</span><span class="value"><span id="th-val">2000</span></span></div>
+          <input type="range" min="500" max="5000" value="2000" step="100" id="thrust" />
+        </div>
+        <div class="wc-control-group" style="display:flex; align-items:center; justify-content:center;">
+          <button class="wc-btn wc-btn-amber" id="launch-btn" style="width:100%; padding:14px;">🔥 LAUNCH</button>
+        </div>
+      </div>
+      ${completeBar(m)}
+    `;
+    const fuel = c.querySelector('#fuel'), thrust = c.querySelector('#thrust');
+    const rkt = c.querySelector('#rkt'), flame = c.querySelector('#flame');
+    const readout = c.querySelector('#sim-readout');
+    fuel.addEventListener('input', ()=> c.querySelector('#f-val').textContent = fuel.value);
+    thrust.addEventListener('input', ()=> c.querySelector('#th-val').textContent = thrust.value);
+    c.querySelector('#launch-btn').addEventListener('click', ()=>{
+      const f = +fuel.value, t = +thrust.value;
+      const altitude = (f * t / 100) * 0.05;
+      flame.classList.add('active');
+      rkt.animate([
+        { bottom: '20px', transform: 'translateX(-50%) scale(1)' },
+        { bottom: 'calc(100% - 60px)', transform: 'translateX(-50%) scale(0.5)', offset: 1 }
+      ], { duration: 2200, easing: 'cubic-bezier(0.5, 0, 0.9, 1)' }).onfinish = ()=>{
+        flame.classList.remove('active');
+        rkt.style.bottom = '20px';
+        readout.innerHTML = `🎯 APOGEE: <strong>${Math.round(altitude)} km</strong> · NEWTON'S 3RD LAW APPLIED`;
+      };
+      readout.innerHTML = `IGNITION · FUEL: <strong>${f}%</strong> · THRUST: <strong>${t}N</strong>`;
+    });
+    wireComplete(c, m.id);
+  };
+
+  /* 8. COLOR WATER */
+  SIMS.colorwater = (c, m) => {
+    c.innerHTML = `
+      <div class="wc-sim-stage">
+        <div class="wc-potion-scene">
+          <div class="wc-beaker" style="width:180px; height:240px;">
+            <div class="wc-beaker-liquid" id="cw-liquid" style="--potion-color:rgba(200,220,255,0.5); height:80%;"></div>
+          </div>
+        </div>
+        <div class="wc-color-buttons">
+          <button class="wc-color-btn" style="--c:#ff4fd8;" data-color="#ff4fd8" data-name="Phenolphthalein">Pink</button>
+          <button class="wc-color-btn" style="--c:#00a0ff;" data-color="#00a0ff" data-name="Bromothymol Blue">Blue</button>
+          <button class="wc-color-btn" style="--c:#b967ff;" data-color="#b967ff" data-name="Universal Indicator">Purple</button>
+        </div>
+      </div>
+      <div class="wc-controls">
+        <div class="wc-control-group" style="grid-column:1/-1;">
+          <div style="font-size:12px; color:var(--wc-text-dim); line-height:1.5;">
+            <strong style="color:var(--wc-amber);">pH INDICATORS</strong> are special molecules that change color based on whether a liquid is acidic, basic, or neutral.
+          </div>
+        </div>
+      </div>
+      ${completeBar(m)}
+    `;
+    const liquid = c.querySelector('#cw-liquid');
+    const readout = c.querySelector('#sim-readout');
+    c.querySelectorAll('.wc-color-btn').forEach(btn => {
+      btn.addEventListener('click', ()=>{
+        liquid.style.setProperty('--potion-color', btn.dataset.color);
+        readout.innerHTML = `INDICATOR ADDED: <strong>${btn.dataset.name}</strong>`;
+      });
+    });
+    wireComplete(c, m.id);
+  };
+
+  /* 9. BUBBLES */
+  SIMS.bubbles = (c, m) => {
+    c.innerHTML = `
+      <div class="wc-sim-stage">
+        <canvas class="wc-bubbles-canvas" id="bc"></canvas>
+      </div>
+      <div class="wc-controls">
+        <div class="wc-control-group" style="grid-column:1/-1;">
+          <div style="font-size:12px; color:var(--wc-text-dim); line-height:1.5;">
+            <strong style="color:var(--wc-amber);">SURFACE TENSION</strong> acts like an invisible skin on bubbles. Click a bubble to bounce it — these bubbles have super-strong tension and <em>won't pop!</em>
+          </div>
+        </div>
+      </div>
+      ${completeBar(m)}
+    `;
+    const canvas = c.querySelector('#bc');
+    const ctx = canvas.getContext('2d');
+    let bubbles = [], rafId, running = true, clickCount = 0;
+    const readout = c.querySelector('#sim-readout');
+    function size(){ canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight; }
+    function init(){
+      size();
+      bubbles = [];
+      for(let i=0;i<12;i++){
+        bubbles.push({
+          x: Math.random()*canvas.width,
+          y: Math.random()*canvas.height,
+          r: 20 + Math.random()*30,
+          vx: (Math.random()-0.5)*2,
+          vy: (Math.random()-0.5)*2,
+          hue: Math.random()*360
+        });
+      }
+    }
+    function draw(){
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      bubbles.forEach(b => {
+        b.x += b.vx; b.y += b.vy;
+        if(b.x - b.r < 0 || b.x + b.r > canvas.width) b.vx *= -1;
+        if(b.y - b.r < 0 || b.y + b.r > canvas.height) b.vy *= -1;
+        b.x = Math.max(b.r, Math.min(canvas.width - b.r, b.x));
+        b.y = Math.max(b.r, Math.min(canvas.height - b.r, b.y));
+        b.vx *= 0.995; b.vy *= 0.995;
+        const g = ctx.createRadialGradient(b.x - b.r*0.3, b.y - b.r*0.3, b.r*0.1, b.x, b.y, b.r);
+        g.addColorStop(0, `hsla(${b.hue}, 90%, 85%, 0.9)`);
+        g.addColorStop(0.7, `hsla(${b.hue}, 90%, 60%, 0.4)`);
+        g.addColorStop(1, `hsla(${b.hue}, 90%, 50%, 0.1)`);
+        ctx.fillStyle = g;
+        ctx.beginPath(); ctx.arc(b.x, b.y, b.r, 0, Math.PI*2); ctx.fill();
+        ctx.fillStyle = 'rgba(255,255,255,0.5)';
+        ctx.beginPath(); ctx.arc(b.x - b.r*0.35, b.y - b.r*0.35, b.r*0.15, 0, Math.PI*2); ctx.fill();
+      });
+      if(running) rafId = requestAnimationFrame(draw);
+    }
+    canvas.addEventListener('click', e => {
+      const r = canvas.getBoundingClientRect();
+      const cx = e.clientX - r.left, cy = e.clientY - r.top;
+      bubbles.forEach(b => {
+        const dx = b.x - cx, dy = b.y - cy;
+        const d = Math.hypot(dx, dy);
+        if(d < b.r + 30){
+          const f = 8 / Math.max(d, 5);
+          b.vx += dx/d * f; b.vy += dy/d * f;
+          b.hue = (b.hue + 60) % 360;
+        }
+      });
+      clickCount++;
+      readout.innerHTML = `BOUNCES: <strong>${clickCount}</strong> · POPPED: <strong style="color:var(--wc-green)">0 (SURFACE TENSION HOLDING!)</strong>`;
+    });
+    init(); draw();
+    window.addEventListener('resize', init);
+    modalClose.addEventListener('click', ()=> { running = false; cancelAnimationFrame(rafId); }, { once: true });
+    wireComplete(c, m.id);
+  };
+
+  /* 10. UNDERWATER */
+  SIMS.underwater = (c, m) => {
+    c.innerHTML = `
+      <div class="wc-sim-stage">
+        <div class="wc-uw-scene land" id="uw">
+          <div class="wc-volcano-body" style="border-left-width:100px; border-right-width:100px; border-bottom-width:140px;"></div>
+          <div class="wc-volcano-crater" style="bottom:135px;"></div>
+        </div>
+      </div>
+      <div class="wc-controls">
+        <div class="wc-control-group" style="grid-column:1/-1; display:flex; align-items:center; gap:20px; justify-content:space-between;">
+          <div>
+            <div class="wc-control-label" style="margin-bottom:4px;"><span>Environment</span></div>
+            <div style="font-size:12px; color:var(--wc-text-dim);">Water is <strong>800×</strong> denser than air. It slows eruptions and traps lava!</div>
+          </div>
+          <div style="display:flex; gap:8px;">
+            <button class="wc-btn wc-btn-ghost" id="uw-land">🏔️ LAND</button>
+            <button class="wc-btn" id="uw-sea">🌊 DEEP SEA</button>
+          </div>
+        </div>
+      </div>
+      ${completeBar(m)}
+    `;
+    const scene = c.querySelector('#uw');
+    const readout = c.querySelector('#sim-readout');
+    const landBtn = c.querySelector('#uw-land'), seaBtn = c.querySelector('#uw-sea');
+    let mode = 'land';
+    let intervalId;
+    function setMode(newMode){
+      mode = newMode;
+      scene.className = 'wc-uw-scene ' + mode;
+      if(mode === 'land'){
+        landBtn.className = 'wc-btn'; seaBtn.className = 'wc-btn wc-btn-ghost';
+        readout.innerHTML = `LAND ERUPTION · Explosive · High reach · Pyroclastic flow · <strong style="color:var(--wc-red);">DANGER</strong>`;
+      } else {
+        seaBtn.className = 'wc-btn'; landBtn.className = 'wc-btn wc-btn-ghost';
+        readout.innerHTML = `DEEP SEA ERUPTION · Pressurized · Pillow lava · Forms new islands · <strong style="color:var(--wc-green);">STUDYING</strong>`;
+      }
+      runParticles();
+    }
+    function runParticles(){
+      clearInterval(intervalId);
+      const rate = mode==='land' ? 120 : 400;
+      intervalId = setInterval(()=>{
+        const p = document.createElement('div');
+        p.className = 'wc-lava-particle';
+        p.style.bottom = '155px';
+        scene.appendChild(p);
+        const dx = (Math.random() - 0.5) * (mode==='land' ? 300 : 80);
+        const dy = mode==='land' ? 120 + Math.random()*80 : 30 + Math.random()*30;
+        const dur = mode==='land' ? 1000 : 2400;
+        p.animate([
+          { bottom: '155px', left: '50%', opacity: 1 },
+          { bottom: (155+dy)+'px', left: 'calc(50% + '+dx+'px)', opacity: 0.8, offset: 0.5 },
+          { bottom: '0px', left: 'calc(50% + '+(dx*1.4)+'px)', opacity: 0 }
+        ], { duration: dur, easing: mode==='land' ? 'cubic-bezier(0.3, 0, 0.7, 1)' : 'ease-out' }).onfinish = ()=> p.remove();
+      }, rate);
+    }
+    landBtn.addEventListener('click', ()=> setMode('land'));
+    seaBtn.addEventListener('click', ()=> setMode('sea'));
+    setMode('land');
+    modalClose.addEventListener('click', ()=> clearInterval(intervalId), { once: true });
+    wireComplete(c, m.id);
+  };
+
+  /* INIT */
+  buildGrid();
+  updateProgress();
+  updateScientist();
+})();
+</script>
+
+<!-- ================================================================== -->
+<!-- END OF WONDERCUB MISSION CONTROL                                   -->
+<!-- ================================================================== -->
